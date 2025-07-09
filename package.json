@@ -8,6 +8,7 @@
     "nodemon": "^3.1.10",
     "prisma": "^6.11.1",
     "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3"
   },
   "name": "user_service_watpato",
@@ -27,7 +28,7 @@
   "scripts": {
     "dev": "nodemon app.ts",
     "build": "tsc",
-    "start": "node dist/app.js",
+    "start": "ts-node app.ts",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
