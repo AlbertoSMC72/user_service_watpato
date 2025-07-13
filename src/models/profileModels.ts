@@ -3,15 +3,13 @@ import { z } from 'zod';
 // Schema para actualizar foto de perfil
 export const updateProfilePictureSchema = z.object({
   profilePicture: z.string()
-    .url('La URL de la imagen debe ser válida')
-    .min(1, 'La URL de la imagen es requerida')
+    .min(1, 'La imagen es requerida en formato base64')
 });
 
 // Schema para actualizar banner
 export const updateBannerSchema = z.object({
   banner: z.string()
-    .url('La URL del banner debe ser válida')
-    .min(1, 'La URL del banner es requerida')
+    .min(1, 'La imagen del banner es requerida en formato base64')
 });
 
 // Schema para actualizar información del perfil
