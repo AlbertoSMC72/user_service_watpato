@@ -16,11 +16,11 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
+        url: 'https://userservicewatpato-production.up.railway.app/',
         description: 'Servidor de desarrollo'
       },
       {
-        url: 'https://api.watpato.com',
+        url: 'https://userservicewatpato-production.up.railway.app/',
         description: 'Servidor de producción'
       }
     ],
