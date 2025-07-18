@@ -358,4 +358,93 @@ router.patch('/banner/:userId', ProfileController.updateBanner);
  */
 router.patch('/info/:userId', ProfileController.updateProfileInfo);
 
+/**
+ * @swagger
+ * /api/profile/follow/{userId}/{targetUserId}:
+ *   post:
+ *     summary: Seguir o dejar de seguir a un usuario
+ *     description: Alterna el estado de seguimiento de un usuario. Si ya lo sigues, lo dejas de seguir. Si no lo sigues, comienzas a seguirlo.
+ *     tags: [Profile]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID del usuario que realiza la acción
+ *         example: 1
+ *       - in: path
+ *         name: targetUserId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID del usuario a seguir/dejar de seguir
+ *         example: 2
+ *     responses:
+ *       200:
+ *         description: Acción completada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/SuccessResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         action:
+ *                           type: string
+ *                           enum: [followed, unfollowed]
+ *                         message:
+ *                           type: string
+ *             examples:
+ *               followed:
+ *                 summary: Usuario seguido
+ *                 value:
+ *                   success: true
+ *                   message: "Usuario seguido exitosamente"
+ *                   data:
+ *                     action: "followed"
+ *                     message: "Usuario seguido exitosamente"
+ *                     data:
+ *                       id: "123"
+ *                       userId: "1"
+ *                       followerId: "2"
+ *               unfollowed:
+ *                 summary: Usuario dejado de seguir
+ *                 value:
+ *                   success: true
+ *                   message: "Usuario dejado de seguir exitosamente"
+ *                   data:
+ *                     action: "unfollowed"
+ *                     message: "Usuario dejado de seguir exitosamente"
+ *       400:
+ *         description: Datos inválidos o error en la operación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               invalidIds:
+ *                 summary: IDs inválidos
+ *                 value:
+ *                   success: false
+ *                   message: "ID de usuario inválido"
+ *               selfFollow:
+ *                 summary: Intentar seguirse a sí mismo
+ *                 value:
+ *                   success: false
+ *                   message: "No puedes seguirte a ti mismo"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.post('/follow/:userId/:targetUserId', ProfileController.toggleFollowUser);
+
 export default router;

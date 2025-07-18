@@ -1,5 +1,6 @@
 // src/services/profileService.ts
 import { ProfileRepository } from '../repos/profileRepository';
+import { NotificationService } from './notificationService';
 import { 
   UpdateProfilePictureType, 
   UpdateBannerType, 
@@ -174,6 +175,40 @@ export class ProfileService {
         throw error;
       }
       throw new Error('Error al actualizar la información del perfil');
+    }
+  }
+
+  static async toggleFollowUser(userId: number, targetUserId: number) {
+    try {
+      const result = await ProfileRepository.toggleFollowUser(userId, targetUserId);
+
+      if (result.action === 'followed') {
+        // Obtener el username del seguidor para la notificación
+        const followerUser = await ProfileRepository.getUserById(userId);
+        
+        // Enviar notificación al usuario que fue seguido (de forma asíncrona)
+        if (followerUser) {
+          NotificationService.sendNewFollowerNotification(targetUserId, followerUser.username)
+            .catch(error => {
+              console.error('Error al enviar notificación:', error);
+            });
+        }
+
+        return {
+          success: true,
+          message: 'Usuario seguido exitosamente',
+          data: result
+        };
+      } else {
+        return {
+          success: true,
+          message: 'Usuario dejado de seguir exitosamente',
+          data: result
+        };
+      }
+    } catch (error) {
+      console.error('Error en ProfileService.toggleFollowUser:', error);
+      throw new Error('Error al seguir al usuario');
     }
   }
 }

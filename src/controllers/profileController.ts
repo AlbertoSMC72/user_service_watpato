@@ -209,4 +209,50 @@ export class ProfileController {
       });
     }
   }
+
+  static async toggleFollowUser(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = parseInt(req.params.userId);
+      const targetUserId = parseInt(req.params.targetUserId);
+      
+      if (isNaN(userId) || isNaN(targetUserId)) {
+        res.status(400).json({ 
+          success: false, 
+          message: 'ID de usuario inválido' 
+        });
+        return;
+      }
+
+      // Verificar que no se esté siguiendo a sí mismo
+      if (userId === targetUserId) {
+        res.status(400).json({ 
+          success: false, 
+          message: 'No puedes seguirte a ti mismo' 
+        });
+        return;
+      }
+
+      const result = await ProfileService.toggleFollowUser(userId, targetUserId);
+      
+      res.status(200).json({
+        success: true,
+        message: result.message,
+        data: result
+      });
+
+    } catch (error) {
+      console.error('Error en toggleFollowUser:', error);
+      if (error instanceof Error) {
+        res.status(400).json({ 
+          success: false, 
+          message: error.message 
+        });
+      } else {
+        res.status(500).json({ 
+          success: false, 
+          message: 'Error interno del servidor' 
+        });
+      }
+    }
+  }
 }

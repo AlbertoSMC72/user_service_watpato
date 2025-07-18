@@ -340,4 +340,47 @@ export class ProfileRepository {
       throw error;
     }
   }
+
+  static async toggleFollowUser(followerId: number, targetUserId: number) {
+    try {
+      // Verificar si ya existe la suscripción
+      const existingSubscription = await prisma.userSubscription.findFirst({
+        where: {
+          userId: BigInt(targetUserId), // author (el que es seguido)
+          followerId: BigInt(followerId) // follower (el que sigue)
+        }
+      });
+
+      if (existingSubscription) {
+        // Si existe, eliminar la suscripción (dejar de seguir)
+        await prisma.userSubscription.delete({
+          where: {
+            id: existingSubscription.id
+          }
+        });
+
+        return {
+          action: 'unfollowed',
+          message: 'Usuario dejado de seguir exitosamente'
+        };
+      } else {
+        // Si no existe, crear la suscripción (seguir)
+        const result = await prisma.userSubscription.create({
+          data: {
+            userId: BigInt(targetUserId), // author (el que es seguido)
+            followerId: BigInt(followerId) // follower (el que sigue)
+          }
+        });
+
+        return {
+          action: 'followed',
+          message: 'Usuario seguido exitosamente',
+          data: serializeBigInt(result)
+        };
+      }
+    } catch (error) {
+      console.error('Error en ProfileRepository.toggleFollowUser:', error);
+      throw error;
+    }
+  }
 }
