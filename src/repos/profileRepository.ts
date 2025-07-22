@@ -383,4 +383,19 @@ export class ProfileRepository {
       throw error;
     }
   }
+
+  static async isFollowing(requesterId: number, userId: number): Promise<boolean> {
+    try {
+      const subscription = await prisma.userSubscription.findFirst({
+        where: {
+          userId: BigInt(userId),
+          followerId: BigInt(requesterId)
+        }
+      });
+      return !!subscription;
+    } catch (error) {
+      console.error('Error en ProfileRepository.isFollowing:', error);
+      throw error;
+    }
+  }
 }

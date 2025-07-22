@@ -52,7 +52,7 @@ export class ProfileService {
     }
   }
 
-  static async getUserProfile(userId: number): Promise<UserProfileResponse | null> {
+  static async getUserProfile(userId: number, requesterId?: number): Promise<UserProfileResponse & { isFollowing: boolean } | null> {
     try {
       // Obtener datos básicos del usuario (sin email para perfiles ajenos)
       const user = await ProfileRepository.getUserById(userId);
@@ -69,6 +69,12 @@ export class ProfileService {
       // Obtener estadísticas públicas
       const publicStats = await ProfileRepository.getPublicStats(userId);
 
+      // Verificar si el solicitante sigue al usuario
+      let isFollowing = false;
+      if (requesterId && requesterId !== userId) {
+        isFollowing = await ProfileRepository.isFollowing(requesterId, userId);
+      }
+
       return {
         id: user.id,
         username: user.username,
@@ -79,7 +85,8 @@ export class ProfileService {
         createdAt: user.createdAt,
         favoriteGenres,
         publishedBooks,
-        stats: publicStats
+        stats: publicStats,
+        isFollowing
       };
 
     } catch (error) {

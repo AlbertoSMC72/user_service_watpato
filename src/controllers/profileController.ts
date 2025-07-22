@@ -48,8 +48,9 @@ export class ProfileController {
   static async getUserProfile(req: Request, res: Response): Promise<void> {
     try {
       const userId = parseInt(req.params.userId);
+      const requesterId = parseInt(req.params.requesterId);
       
-      if (isNaN(userId)) {
+      if (isNaN(userId) || isNaN(requesterId)) {
         res.status(400).json({ 
           success: false, 
           message: 'ID de usuario inválido' 
@@ -57,7 +58,7 @@ export class ProfileController {
         return;
       }
 
-      const profile = await ProfileService.getUserProfile(userId);
+      const profile = await ProfileService.getUserProfile(userId, requesterId);
       
       if (!profile) {
         res.status(404).json({ 

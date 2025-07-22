@@ -70,9 +70,6 @@ const router = Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
- *             example:
- *               success: false
- *               message: "Perfil no encontrado"
  *       500:
  *         description: Error interno del servidor
  *         content:
@@ -84,10 +81,10 @@ router.get('/me/:userId', ProfileController.getOwnProfile);
 
 /**
  * @swagger
- * /api/profile/user/{userId}:
+ * /api/profile/user/{userId}/requester/{requesterId}:
  *   get:
  *     summary: Obtener perfil público de otro usuario
- *     description: Obtiene la información pública del perfil de otro usuario, excluyendo datos privados como email y libros no publicados.
+ *     description: Obtiene la información pública del perfil de otro usuario, excluyendo datos privados como email y libros no publicados. Incluye si el solicitante sigue a este usuario.
  *     tags: [Profile]
  *     parameters:
  *       - in: path
@@ -98,6 +95,14 @@ router.get('/me/:userId', ProfileController.getOwnProfile);
  *           minimum: 1
  *         description: ID único del usuario a consultar
  *         example: 2
+ *       - in: path
+ *         name: requesterId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID del usuario solicitante (para saber si sigue al perfil)
+ *         example: 1
  *     responses:
  *       200:
  *         description: Perfil público obtenido exitosamente
@@ -109,7 +114,13 @@ router.get('/me/:userId', ProfileController.getOwnProfile);
  *                 - type: object
  *                   properties:
  *                     data:
- *                       $ref: '#/components/schemas/UserProfile'
+ *                       allOf:
+ *                         - $ref: '#/components/schemas/UserProfile'
+ *                         - type: object
+ *                           properties:
+ *                             isFollowing:
+ *                               type: boolean
+ *                               description: Indica si el solicitante sigue a este usuario
  *             example:
  *               success: true
  *               data:
@@ -129,6 +140,7 @@ router.get('/me/:userId', ProfileController.getOwnProfile);
  *                 stats:
  *                   followersCount: 156
  *                   booksPublished: 5
+ *                 isFollowing: true
  *       400:
  *         description: ID de usuario inválido
  *         content:
@@ -148,7 +160,7 @@ router.get('/me/:userId', ProfileController.getOwnProfile);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/user/:userId', ProfileController.getUserProfile);
+router.get('/user/:userId/requester/:requesterId', ProfileController.getUserProfile);
 
 /**
  * @swagger
